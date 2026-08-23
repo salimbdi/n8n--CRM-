@@ -1,0 +1,319 @@
+{
+  "name": "نظام العياده الذكي",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "msg",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -656,
+        -80
+      ],
+      "id": "2a81a30f-7527-4c99-9fb0-0a09d7a80a96",
+      "name": "Webhook",
+      "webhookId": "2c9a4397-bf3c-4f33-b4e9-227610c79a5e"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.data.message.conversation }}",
+        "options": {
+          "systemMessage": "انت مساعد و سكرتير للعياده مطلوب منك ان ترد بلطف و ان تكون ردودك احترافيه ضمن خدمات العياده \nيجب عليك ان ترد على العملاء حسب اسئلتهم و ان تكون ضمن الصلاحيات و لا تعطي اي معلومه طبيه و لاتعطي اي معلومه حارج عن الاوامر التي تلقيتها مني \n\nوظيفتك ان تفتح ملف مريض \nاستخدم الاداة\nOpen New File\nلفتح ملف مريض يجب عليك ان تسال العميل على الاسم و رقم الهاتف حتى تستطيع فتح الملف من خلال الاداة\n\n\nاو تعمل على التحقق من توفر الموعد \nمن خلال الاداه \nCheck Appointment\nز الاتي من خلالها يتم تزويد الاداه بالتاريه و الوقت \nهذا مثال عن التاريخ و الوقت\n{\n  \"appointment_date\": \"2025-12-01\",\n  \"appointment_time\": \"10:00:00\"\n}\n\n\nاجعل ردودك مختصرة جدا حتى لاتكون الرساله طويله على المستخدم \n\nاو تحجز موعد \nيمكن لك استخدام الاداه \nCreate Appointment\nيجب ان تحتوي على رقم الهاتف و التاريخ و الوقت \nو هذا مثال JSON \nالذي ستستخدمه لانشاء الموعد من خلال الاداه\n{\n  \"name\": \"محمد أحمد\",\n  \"phone\": \"0501234567\",\n  \"appointment_date\": \"2025-12-05\",\n  \"appointment_time\": \"10:00:00\"\n}\n\n\nاو تجاوب على اسئله الخدمات للعياده \nيمكن لك ان تستخدم الاداه \nGet Service Clinic\nلاحضار اي معلومه عن الخدمات \n\nيمكن لك استخدام الاداه \nCheck File No\nللتحقق من وجود الملف في قاعده البيانات \nفي حال عدم وجود الملف يمكن لك اضافه الملف \nو اذا كان موجود لا تقم بعمليه اضافه الملف في قاعده البيانات \nهذا مثال للجيسون فايل \n{\n  \"phone\": \"0512345678\"\n}\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -192,
+        -80
+      ],
+      "id": "366955ff-8971-47d7-97d0-1b7afb20c286",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -432,
+        144
+      ],
+      "id": "029b0507-426f-4c41-98d4-96c45fbd4f43",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "uRsZZxDgWvA9KurP",
+          "name": "OpenAi Main"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "lmJGzZ6YybLNG13F",
+          "mode": "list",
+          "cachedResultName": "Clinic_Services",
+          "cachedResultUrl": "/projects/5d4aB7Cs2cKuXFXp/datatables/lmJGzZ6YybLNG13F"
+        },
+        "returnAll": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Return_All', ``, 'boolean') }}"
+      },
+      "type": "n8n-nodes-base.dataTableTool",
+      "typeVersion": 1,
+      "position": [
+        -176,
+        144
+      ],
+      "id": "2cce685e-52ea-46f1-8205-84a8084dfa6c",
+      "name": "Get Service Clinic"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://wdbvuulewwtcagvfwzms.supabase.co/functions/v1/create-patient",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "name",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters0_Value', ``, 'string') }}"
+            },
+            {
+              "name": "phone",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters1_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.3,
+      "position": [
+        -48,
+        144
+      ],
+      "id": "ad56223e-491b-4e3d-9fb8-9b1c2bfe6c1c",
+      "name": "Open New File"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://wdbvuulewwtcagvfwzms.supabase.co/functions/v1/check-availability",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "appointment_date",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters0_Value', ``, 'string') }}"
+            },
+            {
+              "name": "appointment_time",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters1_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.3,
+      "position": [
+        144,
+        144
+      ],
+      "id": "34877ad8-5870-44ad-a3db-33c46b6972a5",
+      "name": "Check Appointment"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.body.data.key.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -304,
+        144
+      ],
+      "id": "7dc2d405-b58f-4916-9380-bbe730673a58",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://wdbvuulewwtcagvfwzms.supabase.co/functions/v1/create-appointment",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "name",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters0_Value', ``, 'string') }}"
+            },
+            {
+              "name": "phone",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters1_Value', ``, 'string') }}"
+            },
+            {
+              "name": "appointment_date",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters2_Value', ``, 'string') }}"
+            },
+            {
+              "name": "appointment_time",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters3_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.3,
+      "position": [
+        336,
+        144
+      ],
+      "id": "88e4be31-1d40-4037-bd97-97125133153c",
+      "name": "Create Appointment"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://wbot.einvotca.com/message/sendText/{{ $('Webhook').item.json.body.instance }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "C837C62D-7F20-40B6-9D1F-BC5A272CA796"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $('Webhook').item.json.body.data.key.remoteJid }}\",\n  \"textMessage\": {\n    \"text\": \"{{ $json.output }}\"\n  }\n} \n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        416,
+        -80
+      ],
+      "id": "b86f7fdb-3d6e-451e-b478-348247a2802c",
+      "name": "Send Message"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Service Clinic": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Open New File": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Appointment": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Appointment": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "862b8d5c-7c73-427b-be45-afaaf9e964aa",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4512788ad986d4a9b6ca7e10ee56d1787e59ee80c41eb7f6570173771e2cfce0"
+  },
+  "id": "bJy6soK1mwAZ6VPq",
+  "tags": []
+}
