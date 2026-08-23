@@ -1,0 +1,6 @@
+{
+  "name": "نظام عيادة الأسنان",
+  "description": "نظام إدارة عيادة أسنان مبسط باللغة العربية يشمل ملفات المرضى، المواعيد، الخدمات والأسعار، سجل الزيارات، والربط مع وكيل الذكاء الاصطناعي n8n عبر Webhook و API",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
